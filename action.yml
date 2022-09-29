@@ -65,4 +65,4 @@ runs:
     - if: ${{ inputs.command != '' }}
       shell: bash
       run: |
-        ${{ steps.set-kyma-paths.outputs.path }} ${{ inputs.command }}
+        ${{ steps.set-kyma-paths.outputs.path }} --ci ${{ inputs.command }}
