@@ -1,0 +1,59 @@
+name: 'Kyma CLI'
+description: 'A Github Action wrapping github.com/kyma-project/cli'
+inputs:
+  command:
+    description: 'command to pass to the CLI'
+    required: false
+    default: 'help'
+  stability:
+    description: 'the stability of the CLI, either stable or unstable'
+    required: true
+    default: 'stable'
+  add-to-path:
+    description: 'wether to add the CLI to the path'
+    required: false
+    default: 'true'
+outputs:
+  stdout:
+    description: "The STDOUT of the Command"
+    value: ${{ steps.random-number-generator.outputs.random-number }}
+runs:
+  using: "composite"
+  steps:
+  
+    - uses: actions/cache@v3
+      with:
+        path: |
+          /usr/local/bin/kyma
+          kyma
+        key: ${{ runner.os }}-kyma-${{ hashFiles('kyma') }}
+        restore-keys: |
+          ${{ runner.os }}-kyma-
+          
+    - name: Download the CLI for {{ runner.os }}
+      id: download-linux
+      if: runner.os == 'Linux'
+      run: |
+        EXEC=kyma
+        if [ ! -f "$EXEC" ]; then
+          echo "$EXEC was never downloaded, looking up."
+          wget -q https://storage.googleapis.com/kyma-cli-${{ matrix.cli-stability }}/kyma-linux
+          chmod +x kyma-linux && mv kyma-linux $EXEC
+        fi
+        
+    - name: Download the CLI for {{ runner.os }}
+      if: runner.os == 'macOS'
+      run: |
+        wget -q https://storage.googleapis.com/kyma-cli-${{ matrix.cli-stability }}/kyma-darwin
+        chmod +x kyma-darwin && mv kyma-darwin kyma
+      
+    - if: {{ inputs.command != '' }}
+      run: kyma ${{ inputs.command }}
+
+    - if: {{ inputs.add-to-path }}
+      run: |
+        EXEC=/usr/local/bin/kyma
+        if [ ! -f "$EXEC" ]; then
+            echo "$EXEC does not exist in path yet, adding."
+            cp kyma $EXEC
+        fi
