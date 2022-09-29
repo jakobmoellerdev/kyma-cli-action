@@ -66,4 +66,5 @@ runs:
       shell: bash
       run: |
         which kyma
+        which ${{ steps.set-kyma-paths.outputs.path }}
         ${{ steps.set-kyma-paths.outputs.path }} ${{ inputs.command }}
