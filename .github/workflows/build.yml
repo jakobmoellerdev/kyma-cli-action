@@ -30,7 +30,7 @@ jobs:
         with:
           version: unstable
           
-      - id: kyma-2.7.1
+      - id: kyma-271
         uses: jakobmoellersap/kyma-cli-action@main
         with:
           version: 2.7.1
@@ -38,4 +38,4 @@ jobs:
       - run: |
           ${{ steps.kyma-stable.outputs.path }} version
           ${{ steps.kyma-unstable.outputs.path }} version
-          ${{ steps.kyma-2.7.1.outputs.path }} version
+          ${{ steps.kyma-271.outputs.path }} version
