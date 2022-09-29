@@ -9,6 +9,10 @@ inputs:
     description: 'the stability or version of the CLI, either stable or unstable or a release tag like 2.7.1'
     required: true
     default: 'stable'
+  cache:
+    description: 'whether to cache the downloaded executable (uses actions/cache internally)'
+    required: false
+    default: 'true'
 outputs:
   path:
     description: "Path to the Kyma CLI"
@@ -19,6 +23,7 @@ runs:
   
     - uses: actions/cache@v3
       name: Lookup Cached Kyma if available
+      if: ( inputs.cache == 'true' )
       with:
         path: |
           /usr/local/bin/kyma-${{ inputs.version }}
