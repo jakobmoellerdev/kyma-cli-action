@@ -1,12 +1,12 @@
 name: 'Kyma CLI'
-description: 'A Github Action wrapping github.com/kyma-project/cli'
+description: 'A Github Action wrapping the official Kyma CLI'
 inputs:
   command:
-    description: 'command to pass to the CLI'
+    description: 'command to pass to the CLI, defaults to printing the version'
     required: false
-    default: 'help'
+    default: 'version --client'
   version:
-    description: 'the stability or version of the CLI, either stable or unstable or a release tag'
+    description: 'the stability or version of the CLI, either stable or unstable or a release tag like 2.7.1'
     required: true
     default: 'stable'
 outputs:
@@ -18,6 +18,7 @@ runs:
   steps:
   
     - uses: actions/cache@v3
+      name: Lookup Cached Kyma if available
       with:
         path: |
           /usr/local/bin/kyma-${{ inputs.version }}
@@ -50,6 +51,7 @@ runs:
         fi
     
     - shell: bash
+      name: Add CLI to Path
       run: |
         EXEC=/usr/local/bin/kyma-${{ inputs.version }}
         if [ ! -f "$EXEC" ]; then
@@ -58,11 +60,15 @@ runs:
         fi
         
     - shell: bash
+      name: Set Output Variables
       id: set-kyma-paths
       run: |
+        PATH=/usr/local/bin/kyma-${{ inputs.version }}
+        echo "Writing $PATH into output variables!"
         echo "::set-output name=path::/usr/local/bin/kyma-${{ inputs.version }}"
         
     - if: ${{ inputs.command != '' }}
       shell: bash
+      name: Run ${{ inputs.command }}
       run: |
         ${{ steps.set-kyma-paths.outputs.path }} --ci ${{ inputs.command }}
