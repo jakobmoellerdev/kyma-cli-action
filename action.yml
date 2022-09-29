@@ -38,19 +38,8 @@ runs:
         EXEC=kyma
         if [ ! -f "$EXEC" ]; then
           echo "$EXEC was never downloaded, looking up."
-          wget -q https://storage.googleapis.com/kyma-cli-${{ inputs.cli-stability }}/kyma-linux
+          wget -q https://storage.googleapis.com/kyma-cli-${{ inputs.stability }}/kyma-linux
           chmod +x kyma-linux && mv kyma-linux $EXEC
-        fi
-        
-    - name: Download the CLI for ${{ runner.os }}
-      if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        EXEC=kyma
-        if [ ! -f "$EXEC" ]; then
-          echo "$EXEC was never downloaded, looking up."
-          wget -q https://storage.googleapis.com/kyma-cli-${{ inputs.cli-stability }}/kyma-darwin
-          chmod +x kyma-darwin && mv kyma-darwin $EXEC
         fi
       
     - if: ${{ inputs.command != '' }}
