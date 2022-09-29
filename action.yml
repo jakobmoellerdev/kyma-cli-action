@@ -5,8 +5,8 @@ inputs:
     description: 'command to pass to the CLI'
     required: false
     default: 'help'
-  stability:
-    description: 'the stability of the CLI, either stable or unstable'
+  version:
+    description: 'the stability or version of the CLI, either stable or unstable or a release tag'
     required: true
     default: 'stable'
 outputs:
@@ -20,29 +20,43 @@ runs:
     - uses: actions/cache@v3
       with:
         path: |
-          /usr/local/bin/kyma
-          kyma
-        key: ${{ runner.os }}-kyma-${{ hashFiles('kyma') }}
+          /usr/local/bin/kyma-${{ inputs.version }}
+        key: ${{ runner.os }}-kyma-${{ inputs.version }}
         restore-keys: |
-          ${{ runner.os }}-kyma-
+          ${{ runner.os }}-kyma-${{ inputs.version }}
           
-    - name: Download the CLI for ${{ runner.os }}
-      id: download-linux
+    - name: Download the CLI for ${{ runner.os }} ( ${{ input.version }} )
+      id: download-storage
       shell: bash
-      if: runner.os == 'Linux'
+      if: ( inputs.version == 'stable' ) || ( input.version == 'unstable' )
       run: |
-        EXEC=kyma
+        EXEC=kyma-${{ inputs.version }}
         if [ ! -f "$EXEC" ]; then
           echo "$EXEC was never downloaded, looking up."
-          wget -q https://storage.googleapis.com/kyma-cli-${{ inputs.stability }}/kyma-linux
+          wget -q https://storage.googleapis.com/kyma-cli-${{ inputs.version }}/kyma-linux
           chmod +x kyma-linux && mv kyma-linux $EXEC
         fi
-        EXEC=/usr/local/bin/kyma
+    - name: Download the CLI for ${{ runner.os }} ( ${{ input.version }} )
+      id: download-storage
+      shell: bash
+      if: ( inputs.version != 'stable' ) && ( input.version != 'unstable' )
+      run: |
+        EXEC=kyma-${{ inputs.version }}
+        if [ ! -f "$EXEC" ]; then
+          echo "$EXEC was never downloaded, looking up."
+          wget -q https://github.com/kyma-project/cli/releases/download/${{ input.version }}/kyma_Linux_x86_64.tar.gz
+          chmod +x kyma-linux && mv kyma-linux $EXEC
+        fi
+    
+    - run: |
+        EXEC=/usr/local/bin/kyma-${{ inputs.version }}
         if [ ! -f "$EXEC" ]; then
             echo "$EXEC does not exist in path yet, adding."
-            mv kyma $EXEC
+            mv kyma-${{ inputs.version }} $EXEC
         fi
-      
+        
+    - run: alias kyma=kyma-${{ inputs.version }}
+        
     - if: ${{ inputs.command != '' }}
       shell: bash
-      run: $(which kyma) ${{ inputs.command }}
+      run: kyma ${{ inputs.command }}
