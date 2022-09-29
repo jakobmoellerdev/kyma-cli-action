@@ -9,10 +9,6 @@ inputs:
     description: 'the stability of the CLI, either stable or unstable'
     required: true
     default: 'stable'
-  add-to-path:
-    description: 'wether to add the CLI to the path'
-    required: false
-    default: 'true'
 outputs:
   stdout:
     description: "The STDOUT of the Command"
@@ -41,16 +37,12 @@ runs:
           wget -q https://storage.googleapis.com/kyma-cli-${{ inputs.stability }}/kyma-linux
           chmod +x kyma-linux && mv kyma-linux $EXEC
         fi
+        EXEC=/usr/local/bin/kyma
+        if [ ! -f "$EXEC" ]; then
+            echo "$EXEC does not exist in path yet, adding."
+            mv kyma $EXEC
+        fi
       
     - if: ${{ inputs.command != '' }}
       shell: bash
       run: $(which kyma) ${{ inputs.command }}
-
-    - if: ${{ inputs.add-to-path }}
-      shell: bash
-      run: |
-        EXEC=/usr/local/bin/kyma
-        if [ ! -f "$EXEC" ]; then
-            echo "$EXEC does not exist in path yet, adding."
-            cp kyma $EXEC
-        fi
