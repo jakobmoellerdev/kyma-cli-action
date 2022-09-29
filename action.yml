@@ -10,9 +10,9 @@ inputs:
     required: true
     default: 'stable'
 outputs:
-  stdout:
-    description: "The STDOUT of the Command"
-    value: ${{ steps.random-number-generator.outputs.random-number }}
+  path:
+    description: "Path to the Kyma CLI"
+    value: ${{ steps.set-kyma-paths.outputs.path }}
 runs:
   using: "composite"
   steps:
@@ -57,8 +57,13 @@ runs:
         fi
         
     - shell: bash
-      run: alias kyma=/usr/local/bin/kyma-${{ inputs.version }}
+      id: set-kyma-paths
+      run: |
+        echo "::set-output name=path::/usr/local/bin/kyma-${{ inputs.version }}"
+        alias kyma=/usr/local/bin/kyma-${{ inputs.version }}
         
     - if: ${{ inputs.command != '' }}
       shell: bash
-      run: kyma ${{ inputs.command }}
+      run: |
+        which kyma
+        ${{ steps.set-kyma-paths.outputs.path }} ${{ inputs.command }}
