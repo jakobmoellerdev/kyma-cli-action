@@ -45,6 +45,7 @@ runs:
         if [ ! -f "$EXEC" ]; then
           echo "$EXEC was never downloaded, looking up."
           wget -q https://github.com/kyma-project/cli/releases/download/${{ inputs.version }}/kyma_Linux_x86_64.tar.gz
+          tar -xvf kyma_Linux_x86_64.tar.gz
           chmod +x kyma-linux && mv kyma-linux $EXEC
         fi
     
