@@ -60,11 +60,9 @@ runs:
       id: set-kyma-paths
       run: |
         echo "::set-output name=path::/usr/local/bin/kyma-${{ inputs.version }}"
-        alias kyma=/usr/local/bin/kyma-${{ inputs.version }}
+        ls /usr/local/bin/
         
     - if: ${{ inputs.command != '' }}
       shell: bash
       run: |
-        which kyma
-        which ${{ steps.set-kyma-paths.outputs.path }}
         ${{ steps.set-kyma-paths.outputs.path }} ${{ inputs.command }}
