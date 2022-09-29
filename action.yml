@@ -60,7 +60,6 @@ runs:
       id: set-kyma-paths
       run: |
         echo "::set-output name=path::/usr/local/bin/kyma-${{ inputs.version }}"
-        ls /usr/local/bin/
         
     - if: ${{ inputs.command != '' }}
       shell: bash
