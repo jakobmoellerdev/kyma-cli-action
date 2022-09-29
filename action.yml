@@ -26,7 +26,7 @@ runs:
           ${{ runner.os }}-kyma-${{ inputs.version }}
           
     - name: Download the CLI for ${{ runner.os }} ( ${{ input.version }} )
-      id: download-storage
+      id: download-storage-with-stability
       shell: bash
       if: ( inputs.version == 'stable' ) || ( input.version == 'unstable' )
       run: |
@@ -37,7 +37,7 @@ runs:
           chmod +x kyma-linux && mv kyma-linux $EXEC
         fi
     - name: Download the CLI for ${{ runner.os }} ( ${{ input.version }} )
-      id: download-storage
+      id: download-storage-with-version
       shell: bash
       if: ( inputs.version != 'stable' ) && ( input.version != 'unstable' )
       run: |
