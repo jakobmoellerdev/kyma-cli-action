@@ -6,7 +6,7 @@ inputs:
     required: false
     default: 'version --client'
   version:
-    description: 'the stability or version of the CLI, either stable or unstable or a release tag like 2.7.1'
+    description: 'the stability or version of the CLI, either stable or unstable or a release tag like 2.7.1 or use main'
     required: true
     default: 'stable'
   cache:
@@ -45,7 +45,7 @@ runs:
     - name: Download the CLI for ${{ runner.os }} ( ${{ inputs.version }} )
       id: download-storage-with-version
       shell: bash
-      if: ( inputs.version != 'stable' ) && ( inputs.version != 'unstable' )
+      if: ( inputs.version != 'stable' ) && ( inputs.version != 'unstable' ) && ( inputs.version != 'main' )
       run: |
         EXEC=kyma-${{ inputs.version }}
         if [ ! -f "$EXEC" ]; then
@@ -54,6 +54,29 @@ runs:
           tar -xvf kyma_Linux_x86_64.tar.gz kyma
           chmod +x kyma && mv kyma $EXEC
         fi
+        
+    - name: Checkout the CLI
+      uses: actions/checkout@v3
+      if: inputs.version == 'main'
+      with:
+        # Repository name with owner. For example, actions/checkout
+        # Default: ${{ github.repository }}
+        repository: 'kyma-project/cli'
+        ref: main
+    - name: Setup Go to build the CLI 
+      uses: actions/setup-go@v3
+      if: inputs.version == 'main'
+      with:
+        cache: true
+        go-version-file: go.mod
+        cache-dependency-path: go.sum
+    - name: Build the CLI
+      if: inputs.version == 'main'
+      shell: bash
+      run: |
+        EXEC=kyma-${{ inputs.version }}
+        make build-linux
+        chmod +x ./bin/kyma-linux && mv ./bin/kyma-linux $EXEC
     
     - shell: bash
       name: Add CLI to Path
