@@ -48,14 +48,16 @@ runs:
           chmod +x kyma-linux && mv kyma-linux $EXEC
         fi
     
-    - run: |
+    - shell: bash
+      run: |
         EXEC=/usr/local/bin/kyma-${{ inputs.version }}
         if [ ! -f "$EXEC" ]; then
             echo "$EXEC does not exist in path yet, adding."
             mv kyma-${{ inputs.version }} $EXEC
         fi
         
-    - run: alias kyma=kyma-${{ inputs.version }}
+    - shell: bash
+      run: alias kyma=kyma-${{ inputs.version }}
         
     - if: ${{ inputs.command != '' }}
       shell: bash
