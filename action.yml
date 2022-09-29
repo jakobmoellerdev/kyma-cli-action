@@ -30,7 +30,7 @@ runs:
         restore-keys: |
           ${{ runner.os }}-kyma-
           
-    - name: Download the CLI for {{ runner.os }}
+    - name: Download the CLI for ${{ runner.os }}
       id: download-linux
       shell: bash
       if: runner.os == 'Linux'
@@ -42,7 +42,7 @@ runs:
           chmod +x kyma-linux && mv kyma-linux $EXEC
         fi
         
-    - name: Download the CLI for {{ runner.os }}
+    - name: Download the CLI for ${{ runner.os }}
       if: runner.os == 'macOS'
       shell: bash
       run: |
@@ -53,11 +53,11 @@ runs:
           chmod +x kyma-darwin && mv kyma-darwin $EXEC
         fi
       
-    - if: {{ inputs.command != '' }}
+    - if: ${{ inputs.command != '' }}
       shell: bash
       run: kyma ${{ inputs.command }}
 
-    - if: {{ inputs.add-to-path }}
+    - if: ${{ inputs.add-to-path }}
       shell: bash
       run: |
         EXEC=/usr/local/bin/kyma
