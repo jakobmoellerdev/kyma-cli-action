@@ -44,7 +44,7 @@ runs:
       
     - if: ${{ inputs.command != '' }}
       shell: bash
-      run: kyma ${{ inputs.command }}
+      run: $(which kyma) ${{ inputs.command }}
 
     - if: ${{ inputs.add-to-path }}
       shell: bash
