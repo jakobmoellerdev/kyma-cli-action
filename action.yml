@@ -25,10 +25,10 @@ runs:
         restore-keys: |
           ${{ runner.os }}-kyma-${{ inputs.version }}
           
-    - name: Download the CLI for ${{ runner.os }} ( ${{ input.version }} )
+    - name: Download the CLI for ${{ runner.os }} ( ${{ inputs.version }} )
       id: download-storage-with-stability
       shell: bash
-      if: ( inputs.version == 'stable' ) || ( input.version == 'unstable' )
+      if: ( inputs.version == 'stable' ) || ( inputs.version == 'unstable' )
       run: |
         EXEC=kyma-${{ inputs.version }}
         if [ ! -f "$EXEC" ]; then
@@ -36,15 +36,15 @@ runs:
           wget -q https://storage.googleapis.com/kyma-cli-${{ inputs.version }}/kyma-linux
           chmod +x kyma-linux && mv kyma-linux $EXEC
         fi
-    - name: Download the CLI for ${{ runner.os }} ( ${{ input.version }} )
+    - name: Download the CLI for ${{ runner.os }} ( ${{ inputs.version }} )
       id: download-storage-with-version
       shell: bash
-      if: ( inputs.version != 'stable' ) && ( input.version != 'unstable' )
+      if: ( inputs.version != 'stable' ) && ( inputs.version != 'unstable' )
       run: |
         EXEC=kyma-${{ inputs.version }}
         if [ ! -f "$EXEC" ]; then
           echo "$EXEC was never downloaded, looking up."
-          wget -q https://github.com/kyma-project/cli/releases/download/${{ input.version }}/kyma_Linux_x86_64.tar.gz
+          wget -q https://github.com/kyma-project/cli/releases/download/${{ inputs.version }}/kyma_Linux_x86_64.tar.gz
           chmod +x kyma-linux && mv kyma-linux $EXEC
         fi
     
