@@ -35,7 +35,14 @@ jobs:
         with:
           version: 2.7.1
       
-      - run: |
+      - id: kyma-main
+        uses: jakobmoellersap/kyma-cli-action@main
+        with:
+          version: main
+          
+      - name: Run Versions from previously downloaded bins
+        run: |
           ${{ steps.kyma-stable.outputs.path }} version --client
           ${{ steps.kyma-unstable.outputs.path }} version --client
           ${{ steps.kyma-271.outputs.path }} version --client
+          ${{ steps.kyma-main.outputs.path }} version --client
