@@ -12,7 +12,7 @@ inputs:
   cache:
     description: 'whether to cache the downloaded executable (uses actions/cache internally)'
     required: false
-    default: 'true'
+    default: 'false'
 outputs:
   path:
     description: "Path to the Kyma CLI"
@@ -42,6 +42,7 @@ runs:
           wget -q https://storage.googleapis.com/kyma-cli-${{ inputs.version }}/kyma-linux
           chmod +x kyma-linux && mv kyma-linux $EXEC
         fi
+
     - name: Download the CLI for ${{ runner.os }} ( ${{ inputs.version }} )
       id: download-storage-with-version
       shell: bash
@@ -67,7 +68,7 @@ runs:
       uses: actions/setup-go@v3
       if: inputs.version == 'main'
       with:
-        cache: true
+        cache: ${{ inputs.cache }}
         go-version-file: go.mod
         cache-dependency-path: go.sum
     - name: Build the CLI
@@ -93,7 +94,7 @@ runs:
       run: |
         PATH=/usr/local/bin/kyma-${{ inputs.version }}
         echo "Writing $PATH into output variables!"
-        echo "::set-output name=path::/usr/local/bin/kyma-${{ inputs.version }}"
+        echo "path=/usr/local/bin/kyma-${{ inputs.version }}" >> $GITHUB_OUTPUT
         
     - if: ${{ inputs.command != '' }}
       shell: bash
